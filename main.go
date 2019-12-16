@@ -18,12 +18,17 @@ func main(){
 	router.Handler(http.MethodGet, "/users/:phone", auth.IsAuthorised(users.GetUserFromPhone()))
 
 	router.Handler(http.MethodGet, "/weather", auth.IsAuthorised(getWeather()))
+
+	router.Handler(http.MethodGet, "/promote/:phone", auth.IsAuthorised(users.PromoteUser()))
+
+	router.Handler(http.MethodGet, "/demote/:phone", auth.IsAuthorised(users.DemoteUser()))
+
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func getWeather() http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		url := "https://api.darksky.net/forecast/9702fb99b96c28f5e83c814002d8f2cf/37.8267,-122.4233"
+		url := "https://samples.openweathermap.org/data/2.5/forecast?q=M%C3%BCnchen,DE&appid=b6907d289e10d714a6e88b30761fae22"
 
 		req, _ := http.NewRequest("GET", url, nil)
 

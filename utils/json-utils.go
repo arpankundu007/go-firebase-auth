@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"firebase_auth/models"
 	"github.com/julienschmidt/httprouter"
-	"mobile-specs-golang/constants"
 	"net/http"
 )
 
@@ -18,7 +17,7 @@ func StructToJSONString(data interface{}) string {
 }
 
 func WriteJSON(w http.ResponseWriter, data interface{}){
-	w.Header().Set(constants.ContentTypeHeader, constants.ContentTypeValue)
+	w.Header().Set("Content-Type", "application/json")
 	parseError := json.NewEncoder(w).Encode(&data)
 	if parseError != nil {
 		panic(parseError.Error())
