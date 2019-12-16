@@ -9,7 +9,7 @@ import (
 
 func PromoteUser() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := promoteUser(utils.GetParamFromRequestUrl(r, "phone"), true)
+		err := modifyUserLever(utils.GetParamFromRequestUrl(r, "phone"), true)
 		if err != nil {
 			utils.WriteJSON(w, err.Error())
 		}
@@ -18,14 +18,14 @@ func PromoteUser() http.Handler {
 
 func DemoteUser() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := promoteUser(utils.GetParamFromRequestUrl(r, "phone"), false)
+		err := modifyUserLever(utils.GetParamFromRequestUrl(r, "phone"), false)
 		if err != nil {
 			utils.WriteJSON(w, err.Error())
 		}
 	})
 }
 
-func promoteUser(phone string, promote bool) error {
+func modifyUserLever(phone string, promote bool) error {
 	client, err := auth.GetFirebaseAuthClient()
 	if err != nil {
 		return err
