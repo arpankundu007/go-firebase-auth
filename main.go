@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"go-firebase-auth/auth"
 	"go-firebase-auth/users"
-	"github.com/julienschmidt/httprouter"
 	"io"
 	"io/ioutil"
 	"log"

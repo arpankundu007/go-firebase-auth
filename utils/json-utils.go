@@ -2,8 +2,8 @@ package utils
 
 import (
 	"encoding/json"
-	"go-firebase-auth/models"
 	"github.com/julienschmidt/httprouter"
+	"go-firebase-auth/models"
 	"net/http"
 )
 

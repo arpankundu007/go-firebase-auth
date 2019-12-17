@@ -3,9 +3,9 @@ package users
 import (
 	"context"
 	auth2 "firebase.google.com/go/auth"
+	"fmt"
 	"go-firebase-auth/auth"
 	"go-firebase-auth/utils"
-	"fmt"
 	"net/http"
 )
 
