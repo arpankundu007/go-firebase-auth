@@ -2,8 +2,8 @@ package users
 
 import (
 	"context"
-	"firebase_auth/auth"
-	"firebase_auth/utils"
+	"go-firebase-auth/auth"
+	"go-firebase-auth/utils"
 	"net/http"
 )
 

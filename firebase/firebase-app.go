@@ -8,7 +8,10 @@ import (
 )
 
 func GetFirebaseApp () (*firebase.App, error) {
-	opt := option.WithCredentialsFile("/Users/arpankundu/Downloads/cafu-auth-test-firebase-adminsdk.json")
+	b := []byte(`{
+	}`)
+
+	opt := option.WithCredentialsJSON(b)
 	config := &firebase.Config{ProjectID: "cafu-auth-test"}
 	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {

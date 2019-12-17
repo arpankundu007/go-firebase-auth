@@ -1,13 +1,14 @@
 package main
 
 import (
-	"firebase_auth/auth"
-	"firebase_auth/users"
+	"go-firebase-auth/auth"
+	"go-firebase-auth/users"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main(){
@@ -23,7 +24,7 @@ func main(){
 
 	router.Handler(http.MethodGet, "/demote/:phone", auth.IsAuthorised(users.DemoteUser()))
 
-	log.Fatal(http.ListenAndServe(":3000", router))
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), router))
 }
 
 func getWeather() http.Handler{
