@@ -41,6 +41,27 @@ func IsAuthorised(next http.Handler) http.Handler {
 	}
 }
 
+func IsAdmin() http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		client, _ := GetFirebaseAuthClient()
+		headerToken, _ := getIdTokenFromHeader(r)
+		token, err := client.VerifyIDToken(context.Background(), headerToken)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		claims := token.Claims
+		if admin, ok := claims["admin"]; ok {
+			if admin.(bool) {
+				utils.WriteJSON(w, "Hello Admin")
+			}else {
+				utils.WriteJSON(w, "Sorry, Admin access only")
+			}
+		}
+	})
+}
+
 func GetFirebaseAuthClient() (*auth.Client, error){
 	app, err := firebase.GetFirebaseApp()
 	ctx := context.Background()

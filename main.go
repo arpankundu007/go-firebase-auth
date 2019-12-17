@@ -27,6 +27,8 @@ func main(){
 
 	router.Handler(http.MethodGet, "/demote/:phone", auth.IsAuthorised(users.DemoteUser()))
 
+	router.Handler(http.MethodGet, "/admin", auth.IsAuthorised(auth.IsAdmin()))
+
 	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), router))
 }
 
@@ -44,5 +46,4 @@ func getWeather() http.Handler{
 
 		_, _ = io.WriteString(w, string(body))
 	})
-
 }
