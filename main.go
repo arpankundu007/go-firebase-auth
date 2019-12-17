@@ -12,6 +12,9 @@ import (
 )
 
 func main(){
+
+	_ = os.Setenv("PORT", "8080")
+
 	router := httprouter.New()
 
 	router.Handler(http.MethodPut, "/user/:phone", auth.IsAuthorised(users.UpdateUser()))
