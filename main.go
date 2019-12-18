@@ -1,47 +1,40 @@
 package main
 
 import (
+	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/julienschmidt/httprouter"
-	"go-firebase-auth/auth"
-	"go-firebase-auth/users"
-	"io"
-	"io/ioutil"
+	"go-firebase-auth/middleware"
+	"go-firebase-auth/transport"
+	"go-firebase-auth/usecase"
 	"log"
 	"net/http"
-	"os"
 )
+
 
 func main(){
 
+	svc := usecase.AuthServiceInstance{}
+
+	isAdminHandler := httptransport.NewServer(
+		transport.GetIsAdminEndpoint(svc),
+		transport.IsAdminRequestDecoder,
+		httptransport.EncodeJSONResponse)
+
+	changePermissionHandler := httptransport.NewServer(
+		transport.GetChangePermissionEndpoint(svc),
+		transport.ChangePermissionRequestDecoder,
+		httptransport.EncodeJSONResponse)
+
+	weatherHandler := httptransport.NewServer(
+		svc.GetWeather(),
+		transport.GetWeatherDecoder,
+		httptransport.EncodeJSONResponse)
+
+
 	router := httprouter.New()
+	router.Handler(http.MethodGet, "/admin", middleware.IsAuthorized(isAdminHandler))
+	router.Handler(http.MethodGet, "/weather", middleware.IsAuthorized(weatherHandler))
+	router.Handler(http.MethodGet, "/update/:phone/:admin", middleware.IsAuthorized(changePermissionHandler))
 
-	router.Handler(http.MethodPut, "/user/:phone", auth.IsAuthorised(users.UpdateUser()))
-
-	router.Handler(http.MethodGet, "/users/:phone", auth.IsAuthorised(users.GetUserFromPhone()))
-
-	router.Handler(http.MethodGet, "/weather", auth.IsAuthorised(getWeather()))
-
-	router.Handler(http.MethodGet, "/promote/:phone", auth.IsAuthorised(users.PromoteUser()))
-
-	router.Handler(http.MethodGet, "/demote/:phone", auth.IsAuthorised(users.DemoteUser()))
-
-	router.Handler(http.MethodGet, "/admin", auth.IsAuthorised(auth.IsAdmin()))
-
-	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), router))
-}
-
-func getWeather() http.Handler{
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		url := "https://samples.openweathermap.org/data/2.5/forecast?q=M%C3%BCnchen,DE&appid=b6907d289e10d714a6e88b30761fae22"
-
-		req, _ := http.NewRequest("GET", url, nil)
-
-		res, _ := http.DefaultClient.Do(req)
-
-		res.Header.Add("Content-Type", "application/json")
-		defer res.Body.Close()
-		body, _ := ioutil.ReadAll(res.Body)
-
-		_, _ = io.WriteString(w, string(body))
-	})
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

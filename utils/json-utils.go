@@ -2,19 +2,11 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/julienschmidt/httprouter"
-	"go-firebase-auth/models"
 	"net/http"
+	"strings"
 )
-
-func StructToJSONString(data interface{}) string {
-	jsonBytes, err := json.Marshal(data)
-	if err!=nil{
-		panic(err.Error())
-		return ""
-	}
-	return string(jsonBytes)
-}
 
 func WriteJSON(w http.ResponseWriter, data interface{}){
 	w.Header().Set("Content-Type", "application/json")
@@ -24,21 +16,15 @@ func WriteJSON(w http.ResponseWriter, data interface{}){
 	}
 }
 
-func ReadJSON(r *http.Request) (models.User, error){
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	return user, err
-}
-
-func Contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
 func GetParamFromRequestUrl(r *http.Request, param string) string{
 	return httprouter.ParamsFromContext(r.Context()).ByName(param)
+}
+
+func GetIdTokenFromHeader(r *http.Request) (string, error) {
+	authHeader := r.Header.Get("Authorization")
+	splitAuthHeader := strings.Split(authHeader, " ")
+	if len(splitAuthHeader) != 2 {
+		return "", errors.New("invalid auth header")
+	}
+	return splitAuthHeader[1], nil
 }

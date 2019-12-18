@@ -1,8 +1,9 @@
-package firebase
+package utils
 
 import (
 	"context"
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
 	"log"
 )
@@ -29,4 +30,30 @@ func GetFirebaseApp() (*firebase.App, error) {
 		return nil, err
 	}
 	return app, err
+}
+
+func GetFirebaseAuthClient() (*auth.Client, error){
+	app, err := GetFirebaseApp()
+	ctx := context.Background()
+
+	if err!=nil{
+		return nil, err
+	}
+
+	client, err := app.Auth(ctx)
+	return client, err
+}
+
+func GetUserIdFromPhoneNumber(phone string) (string, error) {
+	client, err := GetFirebaseAuthClient()
+	ctx := context.Background()
+
+	if err!=nil{
+		return "", err
+	}
+	u, err := client.GetUserByPhoneNumber(ctx, phone)
+	if err != nil {
+		return "nil", err
+	}
+	return u.UID, nil
 }
