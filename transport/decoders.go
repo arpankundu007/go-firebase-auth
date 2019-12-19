@@ -2,7 +2,6 @@ package transport
 
 import (
 	"context"
-	"encoding/json"
 	"go-firebase-auth/models"
 	"go-firebase-auth/utils"
 	"net/http"
@@ -14,7 +13,13 @@ func IsAdminRequestDecoder(_ context.Context, r *http.Request) (interface{}, err
 	if err != nil {
 		return nil, err
 	}
-	return models.IsAdminRequest{Token: token}, nil
+	return models.Request{
+		Header: models.Header{
+			ContentType: r.Header.Get("Content-Type"),
+			AppVersion:  r.Header.Get("App-Version"),
+			Token: token,
+		},
+	}, nil
 }
 
 func ChangePermissionRequestDecoder(_ context.Context, r *http.Request) (interface{}, error) {
@@ -33,9 +38,15 @@ func ChangePermissionRequestDecoder(_ context.Context, r *http.Request) (interfa
 }
 
 func GetWeatherDecoder(_ context.Context, r *http.Request) (interface{}, error) {
-	var request models.IsAdminRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	token, err := utils.GetIdTokenFromHeader(r)
+	if err!=nil{
 		return nil, err
 	}
-	return request, nil
+	return models.Request{
+		Header: models.Header{
+			ContentType: r.Header.Get("Content-Type"),
+			AppVersion:  r.Header.Get("App-Version"),
+			Token: token,
+		},
+	}, nil
 }

@@ -5,8 +5,6 @@ import (
 	"errors"
 	"github.com/go-kit/kit/endpoint"
 	"go-firebase-auth/utils"
-	"io/ioutil"
-	"net/http"
 )
 
 type AuthServiceInstance struct{}
@@ -53,26 +51,9 @@ func (AuthServiceInstance) ChangePermission(phone string, promote bool) error{
 	return nil
 }
 
-func (AuthServiceInstance) GetWeather() endpoint.Endpoint{
+func (AuthServiceInstance) HelloWorld() endpoint.Endpoint{
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		url := "https://samples.openweathermap.org/data/2.5/forecast?q=M%C3%BCnchen,DE&appid=b6907d289e10d714a6e88b30761fae22"
-
-		req, err := http.NewRequest("GET", url, nil)
-		if err!=nil{
-			return err.Error(), err
-		}
-
-		res, err := http.DefaultClient.Do(req)
-		if err!=nil{
-			return err.Error(), err
-		}
-
-		body, err := ioutil.ReadAll(res.Body)
-		if err!=nil{
-			return err.Error(), err
-		}
-
-		return string(body), nil
+		return "Hello World", nil
 	}
 }
 

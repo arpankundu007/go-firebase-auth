@@ -16,7 +16,7 @@ func main(){
 	svc := usecase.AuthServiceInstance{}
 
 	isAdminHandler := httptransport.NewServer(
-		transport.GetIsAdminEndpoint(svc),
+		middleware.GoKitIsAuthorised()(transport.GetIsAdminEndpoint(svc)),
 		transport.IsAdminRequestDecoder,
 		httptransport.EncodeJSONResponse)
 
@@ -26,14 +26,14 @@ func main(){
 		httptransport.EncodeJSONResponse)
 
 	weatherHandler := httptransport.NewServer(
-		svc.GetWeather(),
+		middleware.GoKitIsAuthorised()(svc.HelloWorld()),
 		transport.GetWeatherDecoder,
 		httptransport.EncodeJSONResponse)
 
 
 	router := httprouter.New()
-	router.Handler(http.MethodGet, "/admin", middleware.IsAuthorized(isAdminHandler))
-	router.Handler(http.MethodGet, "/weather", middleware.IsAuthorized(weatherHandler))
+	router.Handler(http.MethodGet, "/admin", isAdminHandler)
+	router.Handler(http.MethodGet, "/weather", weatherHandler)
 	router.Handler(http.MethodGet, "/update/:phone/:admin", middleware.IsAuthorized(changePermissionHandler))
 
 	log.Fatal(http.ListenAndServe(":8080", router))

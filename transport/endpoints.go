@@ -9,7 +9,7 @@ import (
 
 func GetIsAdminEndpoint(svc usecase.Service) endpoint.Endpoint{
 	return func(_ context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(models.IsAdminRequest)
+		req := request.(models.Request)
 
 		admin, err := svc.IsAdmin(req.Token)
 
