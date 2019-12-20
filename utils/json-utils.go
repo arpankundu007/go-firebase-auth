@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strings"
 )
@@ -14,10 +13,6 @@ func WriteJSON(w http.ResponseWriter, data interface{}){
 	if parseError != nil {
 		panic(parseError.Error())
 	}
-}
-
-func GetParamFromRequestUrl(r *http.Request, param string) string{
-	return httprouter.ParamsFromContext(r.Context()).ByName(param)
 }
 
 func GetIdTokenFromHeader(r *http.Request) (string, error) {

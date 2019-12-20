@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-kit/kit/endpoint"
 	"go-firebase-auth/utils"
+	"strings"
 )
 
 type AuthServiceInstance struct{}
@@ -29,7 +30,7 @@ func (AuthServiceInstance) IsAdmin(token string) (bool, error){
 	}
 }
 
-func (AuthServiceInstance) ChangePermission(phone string, promote bool) error{
+func (AuthServiceInstance) ChangePermission(phone string, admin string) error{
 	client, err := utils.GetFirebaseAuthClient()
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func (AuthServiceInstance) ChangePermission(phone string, promote bool) error{
 	if err != nil {
 		return err
 	}
-	if promote {
+	if strings.Compare(admin, "promote") == 0 {
 		claims := map[string]interface{}{"admin": true}
 		err = client.SetCustomUserClaims(context.Background(), uid, claims)
 	}else{

@@ -16,25 +16,28 @@ func main(){
 	svc := usecase.AuthServiceInstance{}
 
 	isAdminHandler := httptransport.NewServer(
-		middleware.GoKitIsAuthorised()(transport.GetIsAdminEndpoint(svc)),
+		middleware.GoKitIsAuthorised(transport.GetIsAdminEndpoint(svc)),
 		transport.IsAdminRequestDecoder,
-		httptransport.EncodeJSONResponse)
+		httptransport.EncodeJSONResponse,
+		httptransport.ServerBefore(httptransport.PopulateRequestContext))
 
 	changePermissionHandler := httptransport.NewServer(
-		transport.GetChangePermissionEndpoint(svc),
+		middleware.GoKitIsAuthorised(transport.GetChangePermissionEndpoint(svc)),
 		transport.ChangePermissionRequestDecoder,
-		httptransport.EncodeJSONResponse)
+		httptransport.EncodeJSONResponse,
+		httptransport.ServerBefore(httptransport.PopulateRequestContext))
 
-	weatherHandler := httptransport.NewServer(
-		middleware.GoKitIsAuthorised()(svc.HelloWorld()),
-		transport.GetWeatherDecoder,
-		httptransport.EncodeJSONResponse)
+	helloHandler := httptransport.NewServer(
+		middleware.GoKitIsAuthorised(svc.HelloWorld()),
+		transport.GetHelloWorldDecoder,
+		httptransport.EncodeJSONResponse,
+		httptransport.ServerBefore(httptransport.PopulateRequestContext))
 
 
 	router := httprouter.New()
 	router.Handler(http.MethodGet, "/admin", isAdminHandler)
-	router.Handler(http.MethodGet, "/weather", weatherHandler)
-	router.Handler(http.MethodGet, "/update/:phone/:admin", middleware.IsAuthorized(changePermissionHandler))
+	router.Handler(http.MethodGet, "/hello", helloHandler)
+	router.Handler(http.MethodGet, "/update", changePermissionHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
