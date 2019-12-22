@@ -1,6 +1,5 @@
 package models
 
-
 type IsAdminResponse struct {
 	Admin bool  `json:"admin"`
 	Err   error `json:"error,omitempty"`
@@ -8,14 +7,14 @@ type IsAdminResponse struct {
 
 type ChangePermissionRequest struct {
 	Phone   string `json:"phone"`
-	Promote string   `json:"promote"`
+	Promote string `json:"promote"`
 }
 
 type ChangePermissionResponse struct {
-	Err error `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
+	Err     error  `json:"error,omitempty"`
 }
 
 type WeatherResponse struct {
 	Err error `json:"error,omitempty"`
 }
-

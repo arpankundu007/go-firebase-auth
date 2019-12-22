@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strings"
 )
@@ -23,3 +24,8 @@ func GetIdTokenFromHeader(r *http.Request) (string, error) {
 	}
 	return splitAuthHeader[1], nil
 }
+
+func GetParamFromRequestUrl(r *http.Request, param string) string{
+	return httprouter.ParamsFromContext(r.Context()).ByName(param)
+}
+

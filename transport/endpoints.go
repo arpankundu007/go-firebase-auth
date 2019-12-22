@@ -10,9 +10,9 @@ import (
 )
 
 func GetIsAdminEndpoint(svc usecase.Service) endpoint.Endpoint{
-	return func(context context.Context, request interface{}) (response interface{}, err error) {
-
-		token := strings.Split(context.Value(httptransport.ContextKeyRequestAuthorization).(string), " ")[1]
+	return func(context context.Context, request interface{}) (interface{}, error) {
+		authHeader := context.Value(httptransport.ContextKeyRequestAuthorization).(string)
+		token := strings.Split(authHeader, " ")[1]
 		admin, err := svc.IsAdmin(token)
 
 		if err!=nil{
@@ -29,15 +29,15 @@ func GetIsAdminEndpoint(svc usecase.Service) endpoint.Endpoint{
 }
 
 func GetChangePermissionEndpoint(svc usecase.Service) endpoint.Endpoint{
-	return func(context context.Context, request interface{}) (response interface{}, err error) {
+	return func(context context.Context, request interface{}) (interface{}, error) {
 
 		requestBody := request.(models.ChangePermissionRequest)
 
 		permError := svc.ChangePermission(requestBody.Phone, requestBody.Promote)
 
 		if permError!=nil{
-			return models.ChangePermissionResponse{Err: permError}, permError
+			return models.ChangePermissionResponse{Err: permError, Message:permError.Error()}, permError
 		}
-		return models.ChangePermissionResponse{Err: nil}, nil
+		return models.ChangePermissionResponse{Err: nil, Message:"Successful"}, nil
 	}
 }

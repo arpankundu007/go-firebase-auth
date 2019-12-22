@@ -16,23 +16,22 @@ func main(){
 	svc := usecase.AuthServiceInstance{}
 
 	isAdminHandler := httptransport.NewServer(
-		middleware.GoKitIsAuthorised(transport.GetIsAdminEndpoint(svc)),
+		middleware.LoggingMiddleware(middleware.GoKitIsAuthorised(transport.GetIsAdminEndpoint(svc))),
 		transport.IsAdminRequestDecoder,
 		httptransport.EncodeJSONResponse,
 		httptransport.ServerBefore(httptransport.PopulateRequestContext))
 
 	changePermissionHandler := httptransport.NewServer(
-		middleware.GoKitIsAuthorised(transport.GetChangePermissionEndpoint(svc)),
+		middleware.LoggingMiddleware(middleware.GoKitIsAuthorised(transport.GetChangePermissionEndpoint(svc))),
 		transport.ChangePermissionRequestDecoder,
 		httptransport.EncodeJSONResponse,
 		httptransport.ServerBefore(httptransport.PopulateRequestContext))
 
 	helloHandler := httptransport.NewServer(
-		middleware.GoKitIsAuthorised(svc.HelloWorld()),
+		middleware.LoggingMiddleware(middleware.GoKitIsAuthorised(svc.HelloWorld())),
 		transport.GetHelloWorldDecoder,
 		httptransport.EncodeJSONResponse,
 		httptransport.ServerBefore(httptransport.PopulateRequestContext))
-
 
 	router := httprouter.New()
 	router.Handler(http.MethodGet, "/admin", isAdminHandler)
